@@ -34,7 +34,6 @@ House-Price-Prediction/
 ├── work.ipynb
 ├── stream.py
 ├── model.sav
-├── scaler.sav
 ├── README.md
 └── requirements.txt
 ```
@@ -47,7 +46,6 @@ House-Price-Prediction/
 | `work.ipynb` | Complete data analysis, preprocessing, model training and evaluation |
 | `stream.py` | Streamlit application for house price prediction |
 | `model.sav` | Saved trained Random Forest regression model |
-| `scaler.sav` | Saved `StandardScaler` used during model training |
 | `README.md` | Project documentation |
 | `requirements.txt` | Required Python packages |
 
@@ -72,6 +70,8 @@ The original dataset contains features such as:
 - Basement area
 - Year built
 - Year renovated
+- Average living space of nearby houses
+- Average land area of nearby houses
 - House price
 
 During preprocessing, unnecessary columns such as ID, date, latitude, longitude, zipcode, and some duplicate living/lot area features were removed.
@@ -91,8 +91,6 @@ id
 date
 lat
 long
-sqft_living15
-sqft_lot15
 zipcode
 ```
 
@@ -180,36 +178,16 @@ The final model used for the application is a Random Forest Regressor:
 
 ```python
 RandomForestRegressor(
-    n_estimators=100,
-    max_depth=10,
-    min_samples_split=5,
+    n_estimators=800,
+    max_depth=10,              
     min_samples_leaf=2,
-    max_features='log2'
+    max_features=0.8,
+    random_state=42,
+    n_jobs=-1,
 )
 ```
 
 The models were evaluated using the **R² (R-squared) score**.
-
----
-
-## ⚙️ Feature Scaling
-
-Before training, the input features were standardized using `StandardScaler`.
-
-```python
-from sklearn.preprocessing import StandardScaler
-
-scaler = StandardScaler()
-x = scaler.fit_transform(x)
-```
-
-The fitted scaler was saved for use during prediction:
-
-```python
-p.dump(scaler, open('scaler.sav', 'wb'))
-```
-
-This is important because the Streamlit application must apply the **same scaling process** to new user input before sending it to the trained model.
 
 ---
 
@@ -221,11 +199,10 @@ The trained Random Forest model was saved using Pickle:
 p.dump(random, open('model.sav', 'wb'))
 ```
 
-Two important files are therefore required by the Streamlit application:
+The important files is required by the Streamlit application:
 
 ```text
 model.sav
-scaler.sav
 ```
 
 ---
