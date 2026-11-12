@@ -20,7 +20,8 @@ def main():
     sqft_basement = st.number_input('Enter the basement area (in square feet)')
     yr_built = st.number_input('Enter the year the house was built',max_value=2024,min_value=1890)
     yr_renovated = st.radio('Has the house been renovated?',['Yes','No'],horizontal=True)
-
+    sqft_living15 = st.number_input('Average Living Area of Nearby Homes (sq ft)',min_value=500)
+    sqft_lot15 = st.number_input('Average Land Area of Nearby Homes (sq ft)',min_value=500)
     scaler = pickle.load(open('scaler.sav','rb'))
     model = pickle.load(open('model.sav','rb'))
 
@@ -59,9 +60,8 @@ def main():
         else :
             valid_renovated = 0
 
-        data = [[bedrooms,bathrooms,sqft_living,sqft_lot,floors,waterfront_valid,valid_view,valid_condition,grade,sqft_above,sqft_basement,yr_built,valid_renovated]]
-        data1 = scaler.transform(data)
-        prediction = model.predict(data1)
+        data = [[bedrooms,bathrooms,sqft_living,sqft_lot,floors,waterfront_valid,valid_view,valid_condition,grade,sqft_above,sqft_basement,yr_built,valid_renovated,sqft_living15,sqft_lot15]]
+        prediction = model.predict(data)
 
         if prediction:
             st.write(f"Price : {int(prediction)}₹")
